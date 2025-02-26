@@ -2,14 +2,32 @@ import argparse
 import os
 import sys
 
-from application import ExternalApplication
+from integrations.api import ExternalApi
+from integrations.gui import ExternalGui
 from schema import Spreadsheet
 
 
-def main(file_path):
+def main(file_path, application_type):
     spreadsheet = Spreadsheet(file_path)
     spreadsheet.read()
-    service = ExternalApplication(os.getenv("AUTH_URL"), os.getenv("AUTH_DATA_ENDPOINT"), os.getenv("AUTH_USER"), os.getenv("AUTH_PASS"))
+    if application_type == 'api':
+        service = ExternalApi(
+            os.getenv("BASE_URL"),
+            os.getenv("AUTH_ENDPOINT"),
+            os.getenv("DATA_ENDPOINT"),
+            os.getenv("USERNAME"),
+            os.getenv("PASSWORD")
+        )
+    elif application_type == 'gui':
+        service = ExternalGui(
+            os.getenv("BASE_URL"),
+            os.getenv("AUTH_ENDPOINT"),
+            os.getenv("DATA_ENDPOINT"),
+            os.getenv("USERNAME"),
+            os.getenv("PASSWORD")
+        )
+    else:
+        raise Exception("invalid application type")
     service.authenticate()
     for data in spreadsheet.data:
         try:
@@ -21,8 +39,9 @@ def main(file_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Read excel data and sends to external application")
     parser.add_argument("file_path", help="Excel file path")
-    if len(sys.argv) < 2:
+    parser.add_argument("application_type", help="External Application type (api or gui)")
+    if len(sys.argv) < 3:
         parser.print_help(sys.stderr)
         sys.exit(1)
     args = parser.parse_args()
-    main(args.file_path)
+    main(args.file_path, args.application_type)

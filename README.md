@@ -41,8 +41,9 @@ This project reads data from an Excel spreadsheet, processes it, and sends it to
 
 Set the following environment variables with your authentication details:
 
-- `AUTH_URL`: The URL for the authentication endpoint.
-- `AUTH_DATA_ENDPOINT`: The URL to send data after authenticated.
+- `BASE_URL`: The URL (domain) of the external application.
+- `AUTH_ENDPOINT`: The authentication endpoint.
+- `DATA_ENDPOINT`: The data form endpoint to send data.
 - `AUTH_USER`: Your username.
 - `AUTH_PASS`: Your password.
 
@@ -50,7 +51,7 @@ Set the following environment variables with your authentication details:
 
 !. Run the main script:
    ```bash
-   python main.py <path_to_excel_file>
+   python main.py <path_to_excel_file> ['api'|'gui']
    ```
 
 This will read the data from the Excel file, authenticate with the external application, and send the data.

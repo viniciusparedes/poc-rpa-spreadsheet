@@ -1,14 +1,10 @@
 import aiohttp
 
+from integrations.interface import External
+from schema import Data
 
-class ExternalApplication:
-    def __init__(self, auth_url, data_endpoint, username, password):
-        self.auth_url = auth_url
-        self.data_endpoint = data_endpoint
-        self.username = username
-        self.password = password
-        self.token = None
 
+class ExternalApi(External):
     async def authenticate(self):
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -18,10 +14,10 @@ class ExternalApplication:
                 response.raise_for_status()
                 self.token = (await response.json())['token']
 
-    async def send_data(self, data):
+    async def send_data(self, data: Data):
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    self.data_endpoint,
+                    self.data_url,
                     json=data,
                     headers={"Authorization": f"Bearer {self.token}"}
             ) as response:
